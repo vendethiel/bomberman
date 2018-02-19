@@ -6,8 +6,8 @@ void	map_init(char* map)
 	memset(map, 0, MAP_SIZE);
 	for (int i = 0; i < MAP_ROW; ++i)
 	{
-		map[i] |= map_flag_wall;
-		map[MAP_SIZE - 1 - i] |= map_flag_wall;
+		map[i] |= map_flag_wall; /* top wall */
+		map[MAP_SIZE - 1 - i] |= map_flag_wall; /* bottom wall */
 	}
 	for (int i = 1; i < MAP_COL - 1;)
 	{
