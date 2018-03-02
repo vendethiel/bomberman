@@ -21,7 +21,7 @@ void	map_init(map_cell_t* map)
 	}
 }
 
-char	map_get(map_cell_t* map, int y, int x)
+map_cell_t	map_get(map_cell_t* map, int y, int x)
 {
 	return map[x + y * MAP_ROW];
 }

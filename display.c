@@ -24,7 +24,7 @@ static t_tile get_tile(t_game *game, int x, int y)
     if (player->alive && player->x_pos == x && player->y_pos == y)
       return (ret.x = 0, ret.y = 224, ret);
   }
-  char cell = map_get(game->map, y, x);
+  map_cell_t cell = map_get(game->map, y, x);
   if (map_cell_burning(cell))
     return (ret.x = 32, ret.y = 288, ret);
   if (map_is_breakable_wall(cell))

@@ -77,6 +77,8 @@ static t_game*  read_game(int sockfd)
 int	game_is_finish(t_game *game, int userIndex)
 {
   int totalAlive = 0;
+  /* server passes -1 as userIndex, so that when the first player dies(server),
+   * the game continues */
   if (userIndex != -1 && !game->players[userIndex].alive) {
     return 1; /* we're dead, game is over for us */
   }

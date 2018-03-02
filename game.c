@@ -6,7 +6,7 @@ static void move_player(t_game* game, int userIndex, int y, int x)
   t_player_info* player = game->players + userIndex;
   if (x < 0 || x >= MAP_ROW || y < 0 || y >= MAP_COL)
     return;
-  char cell = map_get(game->map, y, x);
+  map_cell_t cell = map_get(game->map, y, x);
   if (map_is_wall(cell) || map_has_bomb(cell))
     return;
   for (int i = 0; i < MAX_PLAYERS; ++i)
@@ -61,7 +61,7 @@ void  game_tick(t_game* game)
         continue; /* only cross, not 3x3 explosion */
       int checkY = game->bomb->y + y;
       int checkX = game->bomb->x + x;
-      char cell = map_get(game->map, checkY, checkX);
+      map_cell_t cell = map_get(game->map, checkY, checkX);
       /* kill players */
       for (int i = 0; i < MAX_PLAYERS; ++i)
         if (game->players[i].x_pos == checkX && game->players[i].y_pos == checkY)

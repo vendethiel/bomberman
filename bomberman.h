@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define MAX_PLAYERS 4
+#define MAX_PLAYERS 2
 #define MAP_COL 9 /* y | */
 #define MAP_ROW 9 /* x --- */
 #define MAP_SIZE (MAP_COL * MAP_ROW)
@@ -42,7 +42,7 @@ typedef struct s_player_info
         int   frags;
 }		t_player_info;
 
-typedef int map_cell_t;
+typedef char map_cell_t;
 typedef map_cell_t t_map[MAP_SIZE];
 
 #define BOMB_TICKS 40
