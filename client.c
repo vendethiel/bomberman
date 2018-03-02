@@ -77,7 +77,7 @@ static t_game*  read_game(int sockfd)
 int	game_is_finish(t_game *game, int userIndex)
 {
   int totalAlive = 0;
-  if (!game->players[userIndex].alive) {
+  if (userIndex != -1 && !game->players[userIndex].alive) {
     return 1; /* we're dead, game is over for us */
   }
   for (int i = 0; i < MAX_PLAYERS; i++) {

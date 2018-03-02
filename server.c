@@ -19,7 +19,7 @@ static void	bind_clients(t_server *server)
 					&server->len);
 		/* send user id */
 		write(server->fds[i], &i, sizeof i);
-		printf("Connected player #%d\n", i + 1);
+		printf("Connected player #%d\n", i);
 	}
 }
 
@@ -116,6 +116,8 @@ int	server(int port)
 	pthread_create(&server.tid, NULL, game_start, &server);
 	client("127.0.0.1", server.port);
 
+	while (!game_is_finish(&server.game, -1))
+	{ /* wait for other players to end the game */ }
 	server.running = 0; /* TODO mutex */
 	pthread_join(server.tid, &discard_return);
 	return 0;
