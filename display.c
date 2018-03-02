@@ -1,6 +1,7 @@
 #include <SDL_image.h>
 #include "display.h"
 #include "map.h"
+#include "err.h"
 
 static SDL_Rect* sdlh_rect(int x, int y, int w, int h) {
   SDL_Rect* rect;
