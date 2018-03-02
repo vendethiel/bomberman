@@ -7,7 +7,7 @@ static void move_player(t_game* game, int userIndex, int y, int x)
   if (x < 0 || x >= MAP_ROW || y < 0 || y >= MAP_COL)
     return;
   map_cell_t cell = map_get(game->map, y, x);
-  if (map_is_wall(cell) || map_has_bomb(cell))
+  if (map_is_wall(cell) || map_has_bomb(cell) /* there's a bonus to allow walking on bombs */)
     return;
   for (int i = 0; i < MAX_PLAYERS; ++i)
     if (i != userIndex && game->players[i].x_pos == x && game->players[i].y_pos == y)
@@ -50,6 +50,7 @@ void  game_tick(t_game* game)
     if (map_cell_burning(game->map[i]))
       game->map[i] = 0;
 
+	/* TODO increment bomb every N ticks */
   /* TODO loop on players->{bomb} */
   if (!game->bomb)
     return;

@@ -56,7 +56,7 @@ static SDL_Window	*window(void)
   return pWindow;
 }
 
-static t_game*  read_game(int sockfd)
+static t_game*  read_game(int sockfd, int* disconnected)
 {
   char* buffer = malloc(sizeof(t_game));
   char* buffLeft = buffer;
@@ -66,7 +66,7 @@ static t_game*  read_game(int sockfd)
     if (count == -1 && errno == EAGAIN)
       continue; /* try again */
     if (count == 0)
-      return NULL; /* TODO signal disconnect */
+      return (*disconnected = 1, NULL);
     left -= count;
     buffLeft += count;
   }
@@ -102,22 +102,25 @@ void	client(char* host, int port)
   printf("Logged in as player #%d\n", userIndex + 1);
   SDL_Event event;
   while (1) {
-    game = read_game(sockfd);
-    if (!game) {
+    int dc = 0; /* did disconnect? */
+    game = read_game(sockfd, &dc);
+    if (!game && !dc) {
       usleep(SOCKET_TIME_BETWEEN);
       continue;
     }
-    if (game_is_finish(game, userIndex))
+    if (dc || game_is_finish(game, userIndex))
       break;
     while (SDL_PollEvent(&event))
       if (!handle_event(&event, sockfd, game->players + userIndex))
-        return; /* user exited */
+        return; /* user quit */
     display(SDL_GetWindowSurface(pWindow), game/*, game->players + userIndex*/);
     free(game);
     if (SDL_UpdateWindowSurface(pWindow) < 0)
       ERR_MSG("Unable to update window surface\n");
   }
-  if (game->players[userIndex].alive)
+  if (!game)
+    printf("Disconnected\n");
+  else if (game->players[userIndex].alive)
     printf("You win\nGG WP\n");
   else
     printf("You are dead you lose\n");

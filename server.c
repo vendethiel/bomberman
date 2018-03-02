@@ -79,7 +79,8 @@ static void*	game_start(void* _server)
 		game_tick(&server->game);
 		for (int i = 0; i < MAX_PLAYERS; ++i) {
       // TODO send less data, we don't need to send i.e. infos on the bombs
-			write(server->fds[i], &server->game, sizeof server->game);
+			if (server->fds[i] > 0) /* don't write to dc'd client, prevent SIGPIPE */
+				write(server->fds[i], &server->game, sizeof server->game);
     }
 		usleep(SOCKET_TIME_BETWEEN);
 	}
@@ -89,9 +90,11 @@ static void*	game_start(void* _server)
 //Configure server socket
 static int  prepare_server(t_server* server)
 {
+	int reuseopt = 1;
 	server->len = sizeof(struct sockaddr);
 	server->sock_ptr = (struct sockaddr*)&server->sock_serv;
 	server->sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	setsockopt(server->sockfd, SOL_SOCKET, SO_REUSEADDR, &reuseopt, sizeof reuseopt);
 	if (-1 == server->sockfd)
 		ERR_MSG("server sockfd is -1\n");
 	server->sock_serv.sin_family = AF_INET;
@@ -108,6 +111,7 @@ int	server(int port)
 	t_server server;
 	void* discard_return;
 
+	signal(SIGPIPE, SIG_IGN); /* discard SIGPIPE signals */
 	server.running = 1;
   server.port = port;
 
@@ -116,7 +120,7 @@ int	server(int port)
 	pthread_create(&server.tid, NULL, game_start, &server);
 	client("127.0.0.1", server.port);
 
-	while (!game_is_finish(&server.game, -1))
+	while (server.running && !game_is_finish(&server.game, -1))
 	{ /* wait for other players to end the game */ }
 	server.running = 0; /* TODO mutex */
 	pthread_join(server.tid, &discard_return);
