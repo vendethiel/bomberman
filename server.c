@@ -19,7 +19,7 @@ static void	bind_clients(t_server *server)
 					&server->len);
 		/* send user id */
 		write(server->fds[i], &i, sizeof i);
-		printf("Connected player #%d\n", i);
+		printf("Connected player #%d\n", i + 1);
 	}
 }
 

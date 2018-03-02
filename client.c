@@ -14,7 +14,7 @@ int connect_to_server(const char* addr, int port)
   struct sockaddr_in serv;
 
   printf("Connecting to %s:%i\n", addr, port);
-  sockfd = socket(AF_INET, SOCK_STREAM, 0); 
+  sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sockfd < 0)
     ERR_MSG("Could not open socket, sockfd=%d\n", sockfd);
   serv.sin_family = AF_INET;
@@ -96,10 +96,10 @@ void	client(char* host, int port)
   if (!pWindow)
     return;
 
-  int userIndex = 0, readSize;
+  int userIndex = 1, readSize;
   if ((readSize = read(sockfd, &userIndex, sizeof userIndex)) < (long)sizeof userIndex)
     ERR_MSG("Unable to read user index. errno=%d,size=%d\n", errno, readSize);
-  printf("Logged in as player #%d\n", userIndex);
+  printf("Logged in as player #%d\n", userIndex + 1);
   SDL_Event event;
   while (1) {
     game = read_game(sockfd);
