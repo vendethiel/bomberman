@@ -42,7 +42,8 @@ typedef struct s_player_info
         int   frags;
 }		t_player_info;
 
-typedef char t_map[MAP_SIZE];
+typedef int map_cell_t;
+typedef map_cell_t t_map[MAP_SIZE];
 
 #define BOMB_TICKS 40
 typedef struct s_bomb
