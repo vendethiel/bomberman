@@ -112,7 +112,10 @@ int	server(int port)
 	void* discard_return;
 
 	signal(SIGPIPE, SIG_IGN); /* discard SIGPIPE signals */
-	pthread_mutex_init(&server.mutex, NULL);
+	if (pthread_mutex_init(&server.mutex, NULL) != 0)
+	{
+		ERR_MSG("could not init mutex, errno=%d\n", errno);
+	}
 	set_running(server, 1);
 	server.port = port;
 
