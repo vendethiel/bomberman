@@ -112,17 +112,17 @@ int	server(int port)
 	void* discard_return;
 
 	signal(SIGPIPE, SIG_IGN); /* discard SIGPIPE signals */
-	server.running = 1;
-  server.port = port;
+	set_running(server, 1);
+	server.port = port;
 
 	if (!prepare_server(&server))
 		return 1;
 	pthread_create(&server.tid, NULL, game_start, &server);
 	client("127.0.0.1", server.port);
 
-	while (server.running && !game_is_finish(&server.game, -1))
+	while (is_running(server) && !game_is_finish(&server.game, -1))
 	{ /* wait for other players to end the game */ }
-	server.running = 0; /* TODO mutex */
+	set_running(server, 0);
 	pthread_join(server.tid, &discard_return);
 	return 0;
 }

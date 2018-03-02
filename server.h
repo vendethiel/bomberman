@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include "main.h"
 #include "bomberman.h"
+#include "server_state.h"
 
 int	server(int host);
 
@@ -18,6 +19,7 @@ typedef struct s_server {
         int sockfd;
         int port;
         int running;
+        int lock;
 } t_server;
 
 #endif
