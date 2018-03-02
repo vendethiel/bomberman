@@ -19,7 +19,12 @@ typedef struct s_server {
         int sockfd;
         int port;
         int running;
-        int lock;
+        pthread_mutex_t mutex;
 } t_server;
+
+
+int is_running(t_server server);
+void set_running(t_server server, int value);
+
 
 #endif

@@ -1,34 +1,20 @@
 #include <pthread.h>
+#include "server.h"
 #include "server_state.h"
 
-static pthread_mutex_t mutex;
-
-size_t lock(void)
+int is_running(t_server server)
 {
-	if (pthread_mutex_init(&mutex, NULL) != 0)
-		return (0);
-  	if (pthread_mutex_lock(&mutex))
-		return (0);
+  int ret;
 
-	return (1);
-}
-
-size_t unlock(void)
-{
-	return (pthread_mutex_unlock(&mutex));
-}
-
-int is_running(t_server* server)
-{
-  lock();
-  ret = server->running;
-  unlock();
+  pthread_mutex_lock(&server.mutex);
+  ret = server.running;
+  pthread_mutex_unlock(&server.mutex);
   return ret;
 }
 
-void set_running(t_server* server, int value)
+void set_running(t_server server, int value)
 {
-  lock();
-  server->running = value;
-  unlock();
+  pthread_mutex_lock(&server.mutex);
+  server.running = value;
+  pthread_mutex_unlock(&server.mutex);
 }

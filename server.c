@@ -112,6 +112,7 @@ int	server(int port)
 	void* discard_return;
 
 	signal(SIGPIPE, SIG_IGN); /* discard SIGPIPE signals */
+	pthread_mutex_init(&server.mutex, NULL);
 	set_running(server, 1);
 	server.port = port;
 
