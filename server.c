@@ -39,10 +39,14 @@ static int	handle_client(t_server *server, fd_set *readfs, int userIndex)
 		while (left > 0)
 		{
 			int count = read(sockfd, buffer, left);
-			if (count == 0)
+			if (count < 0)
+				continue;
+			else if (count == 0)
 			{
+				server->game.players[userIndex].alive = 0;
+				server->fds[userIndex] = 0;
 				FD_CLR(sockfd, readfs);
-				return 0;
+				return 1;
 			}
 			left -= count;
 			buffLeft += count;
@@ -66,9 +70,7 @@ static void*	game_start(void* _server)
 	{
 		FD_ZERO(&readfs);
 		for (int i = 0; i < MAX_PLAYERS; ++i)
-			if (-1 == server->fds[i])
-				return NULL;
-			else
+			if (-1 != server->fds[i])
 				FD_SET(server->fds[i], &readfs);
 		tv.tv_sec = tv.tv_usec = 0;
 		select(server->fds[MAX_PLAYERS - 1] + 1, &readfs, NULL, NULL, &tv);
@@ -79,12 +81,12 @@ static void*	game_start(void* _server)
 		game_tick(&server->game);
 		for (int i = 0; i < MAX_PLAYERS; ++i) {
       // TODO send less data, we don't need to send i.e. infos on the bombs
-			if (server->fds[i] > 0) /* don't write to dc'd client, prevent SIGPIPE */
+			if (server->game.players[i].alive)
 				write(server->fds[i], &server->game, sizeof server->game);
     }
 		usleep(SOCKET_TIME_BETWEEN);
 	}
-	return NULL;
+	return NULL; /* for the thread... */
 }
 
 //Configure server socket
