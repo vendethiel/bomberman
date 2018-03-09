@@ -81,7 +81,7 @@ static void*	game_start(void* _server)
 		game_tick(&server->game);
 		for (int i = 0; i < MAX_PLAYERS; ++i) {
       // TODO send less data, we don't need to send i.e. infos on the bombs
-			if (server->game.players[i].alive)
+			if (-1 != server->fds[i])
 				write(server->fds[i], &server->game, sizeof server->game);
     }
 		usleep(SOCKET_TIME_BETWEEN);
@@ -124,7 +124,7 @@ int	server(int port)
 	pthread_create(&server.tid, NULL, game_start, &server);
 	client("127.0.0.1", server.port);
 
-	while (is_running(&server) && !game_is_finish(&server.game, -1))
+	while (is_running(&server))
 	{ /* wait for other players to end the game */ }
 	set_running(&server, 0);
 	pthread_join(server.tid, &discard_return);

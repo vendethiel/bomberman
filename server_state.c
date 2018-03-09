@@ -1,13 +1,15 @@
 #include <pthread.h>
 #include "server.h"
+#include "client.h"
 #include "server_state.h"
 
 int is_running(t_server* server)
 {
-  int ret;
+  if (game_is_finish(&server->game, -1))
+    return 0;
 
   pthread_mutex_lock(&server->mutex);
-  ret = server->running;
+  int ret = server->running;
   pthread_mutex_unlock(&server->mutex);
   return ret;
 }
