@@ -41,10 +41,7 @@ static int handle_event(SDL_Event* event, int sockfd, t_player_info* infos)
 static SDL_Window	*window(void)
 {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
-  {
-    printf("SDL init error: %s", SDL_GetError());
-    return NULL;
-  }
+    ERR_MSG("SDL init error: %s", SDL_GetError());
 
   SDL_Window* pWindow = NULL;
   pWindow = SDL_CreateWindow("Bomberman", SDL_WINDOWPOS_UNDEFINED,
@@ -113,7 +110,7 @@ void	client(char* host, int port)
     while (SDL_PollEvent(&event))
       if (!handle_event(&event, sockfd, game->players + userIndex))
         return; /* user quit */
-    display(SDL_GetWindowSurface(pWindow), game/*, game->players + userIndex*/);
+    display(SDL_GetWindowSurface(pWindow), game);
     free(game);
     if (SDL_UpdateWindowSurface(pWindow) < 0)
       ERR_MSG("Unable to update window surface\n");
@@ -124,4 +121,5 @@ void	client(char* host, int port)
     printf("You win\nGG WP\n");
   else
     printf("You are dead you lose\n");
+  free(game);
 }

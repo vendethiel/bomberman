@@ -23,8 +23,8 @@ typedef struct s_server {
 } t_server;
 
 
-int is_running(t_server server);
-void set_running(t_server server, int value);
+int is_running(t_server* server);
+void set_running(t_server* server, int value);
 
 
 #endif

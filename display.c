@@ -3,17 +3,11 @@
 #include "map.h"
 #include "err.h"
 
-static SDL_Rect* sdlh_rect(int x, int y, int w, int h) {
-  SDL_Rect* rect;
-
-  rect = malloc(sizeof *rect);
-  if (!rect)
-    return NULL;
+static void sdl_rect_init(SDL_Rect* rect, int x, int y, int w, int h) {
   rect->x = x;
   rect->y = y;
   rect->w = w;
   rect->h = h;
-  return rect;
 }
 
 static t_tile get_tile(t_game *game, int x, int y)
@@ -49,16 +43,15 @@ static SDL_Surface *getSpriteMap(void)
 
 void	display(SDL_Surface *screen, t_game *game/*, t_player_info *player*/)
 {
+  SDL_Rect tile_rec;
+  SDL_Rect sprite_rec;
   for (int y = 0; y < MAP_COL; ++y) {
     for (int x = 0; x < MAP_ROW; ++x) {
       t_tile tile = get_tile(game, x, y);
+      sdl_rect_init(&tile_rec, tile.x, tile.y, TILE_WIDTH, TILE_HEIGHT);
+      sdl_rect_init(&sprite_rec, x * TILE_WIDTH, y * TILE_HEIGHT, 0, 0);
 
-      SDL_BlitSurface(
-        getSpriteMap(),
-        sdlh_rect(tile.x, tile.y, TILE_WIDTH, TILE_HEIGHT),
-        screen,
-        sdlh_rect(x * TILE_WIDTH, y * TILE_HEIGHT, 0 /* unused */, 0 /* unused */)
-      );
+      SDL_BlitSurface(getSpriteMap(), &tile_rec, screen, &sprite_rec);
     }
   }
 }

@@ -62,7 +62,7 @@ static void*	game_start(void* _server)
 	bind_clients(server);
 	map_init(server->game.map);
 	game_init_players(&server->game);
-	while (server->running) /* TODO mutex */
+	while (is_running(server))
 	{
 		FD_ZERO(&readfs);
 		for (int i = 0; i < MAX_PLAYERS; ++i)
@@ -103,6 +103,7 @@ static int  prepare_server(t_server* server)
 	if (-1 == bind(server->sockfd, server->sock_ptr, server->len))
 		ERR_MSG("could not bind, errno=%d\n", errno);
 	listen(server->sockfd, MAX_PLAYERS);
+  server->running = 1;
 	return 1;
 }
 
@@ -112,19 +113,19 @@ int	server(int port)
 	void* discard_return;
 
 	signal(SIGPIPE, SIG_IGN); /* discard SIGPIPE signals */
-	if (pthread_mutex_init(&server.mutex, NULL) != 0)
-		ERR_MSG("could not init mutex, errno=%d\n", errno);
-	set_running(server, 1);
 	server.port = port;
 
 	if (!prepare_server(&server))
 		return 1;
+	if (pthread_mutex_init(&server.mutex, NULL) != 0)
+		ERR_MSG("could not init mutex, errno=%d\n", errno);
 	pthread_create(&server.tid, NULL, game_start, &server);
 	client("127.0.0.1", server.port);
 
-	while (is_running(server) && !game_is_finish(&server.game, -1))
+	while (is_running(&server) && !game_is_finish(&server.game, -1))
 	{ /* wait for other players to end the game */ }
-	set_running(server, 0);
+	set_running(&server, 0);
 	pthread_join(server.tid, &discard_return);
+  pthread_mutex_destroy(&server.mutex);
 	return 0;
 }

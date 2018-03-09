@@ -7,8 +7,6 @@ void handle_action(SDL_KeyboardEvent* key, int sockfd, t_player_info* infos)
   (void)infos; /* might not be necessary */
   t_client_request *req = calloc(sizeof *req, 1);
   
-	req->magic = 42;
-
   switch (key->keysym.sym)
   {
     case SDLK_UP:

@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define MAX_PLAYERS 2
+#define MAX_PLAYERS 3
 #define MAP_COL 9 /* y | */
 #define MAP_ROW 9 /* x --- */
 #define MAP_SIZE (MAP_COL * MAP_ROW)
@@ -19,13 +19,11 @@
 
 typedef struct  s_client_request
 {
-        unsigned int  magic;                  /* Un magic number commun entre le client et le serveur, ou l'identifiant d'un type de structure */
         int           x_pos;                  /* La position x souhait?e par le client */
         int           y_pos;                  /* La position y souhait?e par le client */
         int           dir;                    /* La direction souhait?e par le client */
         int           command;                /* Une commande du client (0 : Ne rien faire / 1 : Poser une bombe) */
         int           speed;                  /* La vitesse du joueur */
-        int           ckecksum;               /* Un checksum simple */
 }               t_client_request;
 
 typedef struct s_player_info
