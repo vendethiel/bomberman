@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define MAX_PLAYERS 3
+#define MAX_PLAYERS 2
 #define MAP_COL 9 /* y | */
 #define MAP_ROW 9 /* x --- */
 #define MAP_SIZE (MAP_COL * MAP_ROW)
