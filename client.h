@@ -5,4 +5,5 @@
 
 void	client(char* host, int port);
 int	game_is_finish(t_game *game, int userIndex);
+
 #endif

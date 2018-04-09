@@ -11,102 +11,54 @@ static void	bind_clients(t_server *server)
 	printf("Binding clients (total %d)\n", MAX_PLAYERS);
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
-		/* TODO check whether a client disconnected */
     /* TODO make Ctrl-c interrupts work, someway, somehow */
-		server->fds[i] = -1;
-		while (-1 == server->fds[i])
-			server->fds[i] = accept(server->sockfd, server->sock_ptr,
-					&server->len);
+    accept_client(&server->socks[i], &server->sock);
 		/* send user id */
-		write(server->fds[i], &i, sizeof i);
+		write_to(server->socks[i], (char*)&i, sizeof i);
 		printf("Connected player #%d\n", i + 1);
 	}
 }
 
 /* receives a command from the client
  * returns 0 on read length 0 (dc) */
-static int	handle_client(t_server *server, fd_set *readfs, int userIndex)
+static int	handle_client(t_server *server, int userIndex)
 {
 	if (!server->game.players[userIndex].alive)
 		return 1;
-	int sockfd = server->fds[userIndex];
 	char	buffer[sizeof(t_client_request)];
 
-	if (FD_ISSET(sockfd, readfs))
-	{
-		size_t left = sizeof(t_client_request);
-		char *buffLeft = buffer;
-		while (left > 0)
-		{
-			int count = read(sockfd, buffer, left);
-			if (count < 0)
-				continue;
-			else if (count == 0)
-			{
-				server->game.players[userIndex].alive = 0;
-				server->fds[userIndex] = 0;
-				FD_CLR(sockfd, readfs);
-				return 1;
-			}
-			left -= count;
-			buffLeft += count;
-		}
-		FD_CLR(sockfd, readfs);
-		game_process(server, (t_client_request*)buffer, userIndex);
-	}
-	return 1;
+  switch (read_client_request(&server->socks[userIndex], &server->sock, buffer)) {
+    case read_ok:
+      game_process(server, (t_client_request*)buffer, userIndex);
+      return 1;
+
+    case read_already_dc:
+      return 1; /* say everything was alright */
+
+    case read_disconnect:
+      server->game.players[userIndex].alive = 0;
+      return 0;
+  }
 }
 
 static void*	game_start(void* _server)
 {
 	t_server *server = _server;
-	struct timeval	tv;
-	fd_set	readfs;
 
 	bind_clients(server);
 	map_init(server->game.map);
 	game_init_players(&server->game);
-	while (is_running(server))
-	{
-		FD_ZERO(&readfs);
-		for (int i = 0; i < MAX_PLAYERS; ++i)
-			if (-1 != server->fds[i])
-				FD_SET(server->fds[i], &readfs);
-		tv.tv_sec = tv.tv_usec = 0;
-		select(server->fds[MAX_PLAYERS - 1] + 1, &readfs, NULL, NULL, &tv);
+	while (is_running(server)) {
+    select_clients(&server->sock, MAX_PLAYERS, server->socks);
 		/* read actions for each player */
 		for (int i = 0; i < MAX_PLAYERS; ++i)
-			if (server->fds[i] > 0 && !handle_client(server, &readfs, i))
-				return NULL;
+			handle_client(server, i); /* note: DCs don't stop the server anymore. Let's see if everything still works... */
 		game_tick(&server->game);
-		for (int i = 0; i < MAX_PLAYERS; ++i) {
-      // TODO send less data, we don't need to send i.e. infos on the bombs
-			if (-1 != server->fds[i])
-				write(server->fds[i], &server->game, sizeof server->game);
-    }
+		for (int i = 0; i < MAX_PLAYERS; ++i)
+      write_to(server->socks[i], (char*)&server->game, sizeof server->game); /* TODO send less data */
 		usleep(SOCKET_TIME_BETWEEN);
 	}
 	return NULL; /* for the thread... */
-}
-
-//Configure server socket
-static int  prepare_server(t_server* server)
-{
-	int reuseopt = 1;
-	server->len = sizeof(struct sockaddr);
-	server->sock_ptr = (struct sockaddr*)&server->sock_serv;
-	server->sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	setsockopt(server->sockfd, SOL_SOCKET, SO_REUSEADDR, &reuseopt, sizeof reuseopt);
-	if (-1 == server->sockfd)
-		ERR_MSG("server sockfd is -1\n");
-	server->sock_serv.sin_family = AF_INET;
-	server->sock_serv.sin_port = htons(server->port);
-	server->sock_serv.sin_addr.s_addr = INADDR_ANY;
-	if (-1 == bind(server->sockfd, server->sock_ptr, server->len))
-		ERR_MSG("could not bind, errno=%d\n", errno);
-	listen(server->sockfd, MAX_PLAYERS);
-  server->running = 1;
-	return 1;
 }
 
 int	server(int port)
@@ -117,15 +69,18 @@ int	server(int port)
 	signal(SIGPIPE, SIG_IGN); /* discard SIGPIPE signals */
 	server.port = port;
 
-	if (!prepare_server(&server))
-		return 1;
+  socket_prepare_data(&server.sock, port);
+  server.running = 1;
 	if (pthread_mutex_init(&server.mutex, NULL) != 0)
 		ERR_MSG("could not init mutex, errno=%d\n", errno);
 	pthread_create(&server.tid, NULL, game_start, &server);
 	client("127.0.0.1", server.port);
 
-	while (is_running(&server))
-	{ /* wait for other players to end the game */ }
+	while (is_running(&server)) {
+    /* TODO sleep-wait... cvar? */
+    /* wait for other players to end the game */
+  }
+
 	set_running(&server, 0);
 	pthread_join(server.tid, &discard_return);
   pthread_mutex_destroy(&server.mutex);

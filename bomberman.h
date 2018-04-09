@@ -1,11 +1,13 @@
 #ifndef BOMBERMAN_H_
 #define BOMBERMAN_H_
 
-#include <sys/types.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <stddef.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+
+#include "err.h"
 
 #define MAX_PLAYERS 2
 #define MAP_COL 9 /* y | */

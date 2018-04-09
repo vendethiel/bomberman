@@ -6,17 +6,15 @@
 #include "main.h"
 #include "bomberman.h"
 #include "server_state.h"
+#include "socket.h"
 
 int	server(int host);
 
 typedef struct s_server {
         pthread_t tid;
         t_game	game;
-        int	fds[MAX_PLAYERS];
-        struct sockaddr_in	sock_serv;
-        struct sockaddr	*sock_ptr;
-        socklen_t	len;
-        int sockfd;
+        socket_holder socks[MAX_PLAYERS];
+        socket_data sock;
         int port;
         int running;
         pthread_mutex_t mutex;
@@ -28,3 +26,4 @@ void set_running(t_server* server, int value);
 
 
 #endif
+

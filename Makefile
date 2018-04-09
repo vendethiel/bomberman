@@ -1,5 +1,11 @@
 SRC = $(wildcard *.c)
 
+ifeq ($(OS),Windows_NT)
+	SRC+=platforms/win/socket_client.c platforms/win/socket_server.c
+else
+	SRC+=platforms/posix/socket_client.c platforms/posix/socket_server.c
+endif
+
 OBJ = $(SRC:.c=.o)
 
 LIBS = `sdl2-config --libs`
