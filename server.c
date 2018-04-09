@@ -33,6 +33,7 @@ static int	handle_client(t_server *server, int userIndex)
       return 1;
 
     case read_already_dc:
+    case read_none:
       return 1; /* say everything was alright */
 
     case read_disconnect:

@@ -41,8 +41,9 @@ read_request read_client_request(socket_holder* fd, socket_data* s, char* buffer
 			buffLeft += count;
 		}
 		FD_CLR(*fd, &s->readfs);
+    return read_ok;
   }
-  return read_ok;
+  return read_none;
 }
 
 void select_clients(socket_data* s, int numfds, socket_holder* fds)

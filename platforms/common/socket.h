@@ -9,6 +9,7 @@ typedef enum e_read_request {
   read_disconnect,
   read_ok,
   read_already_dc,
+  read_none,
 } read_request;
 
 /* common */
