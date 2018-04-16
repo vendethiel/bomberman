@@ -11,13 +11,19 @@ include_directories(platforms/common)
 if (WIN32)
     include_directories(platforms/windows)
     set(PLATFORM_SPECIFIC_FILES
-            platforms/windows/socket_server.c platforms/windows/socket_server.h)
+            platforms/windows/socket.h
+            platforms/windows/socket_server.c
+            platforms/windows/socket_client.c
+            platforms/windows/thread.h
+            platforms/windows/thread.c)
 else()
     include_directories(platforms/posix)
     set(PLATFORM_SPECIFIC_FILES
             platforms/posix/socket.h
             platforms/posix/socket_client.c
-            platforms/posix/socket_server.c)
+            platforms/posix/socket_server.c
+            platforms/posix/thread.h
+            platforms/posix/thread.c)
 endif(WIN32)
 
 # build an executable
@@ -42,7 +48,8 @@ add_executable(${PROJECT_NAME}
         server.c
         server.h
         server_state.c
-        server_state.h)
+        server_state.h
+        socket.h platforms/common/socket.c thread.h)
 
 
 # include deps

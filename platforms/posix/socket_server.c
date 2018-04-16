@@ -11,9 +11,9 @@ void write_to(int fd, char* data, size_t size)
 void accept_client(socket_holder* fd, socket_data* s)
 {
   /* TODO check whether a client disconnected */
-  *fd = -1;
-  while (-1 == *fd)
+  do {
     *fd = accept(s->sockfd, s->sock_ptr, &s->len);
+  } while (-1 == *fd);
 }
 
 read_request read_client_request(socket_holder* fd, socket_data* s, char* buffer)
@@ -46,18 +46,11 @@ read_request read_client_request(socket_holder* fd, socket_data* s, char* buffer
   return read_none;
 }
 
-void select_clients(socket_data* s, int numfds, socket_holder* fds)
-{
-	struct timeval	tv;
+void socket_setup(void)
+{ }
 
-  FD_ZERO(&s->readfs);
-
-  for (int i = 0; i < numfds; ++i)
-    if (-1 != fds[i])
-      FD_SET(fds[i], &s->readfs);
-  tv.tv_sec = tv.tv_usec = 0;
-  select(fds[MAX_PLAYERS - 1] + 1, &s->readfs, NULL, NULL, &tv); /* TODO don't use MAX_PLAYERS here */
-}
+void socket_cleanup(void)
+{ }
 
 void socket_prepare_data(socket_data* s, int port)
 {
@@ -67,7 +60,7 @@ void socket_prepare_data(socket_data* s, int port)
 	s->sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	setsockopt(s->sockfd, SOL_SOCKET, SO_REUSEADDR, &reuseopt, sizeof reuseopt);
 	if (-1 == s->sockfd)
-		ERR_MSG("s sockfd is -1\n");
+		ERR_MSG("sockfd is -1\n");
 	s->sock_serv.sin_family = AF_INET;
 	s->sock_serv.sin_port = htons(port);
 	s->sock_serv.sin_addr.s_addr = INADDR_ANY;

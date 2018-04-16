@@ -1,8 +1,7 @@
-#include <unistd.h>
-#include <sys/time.h>
 #include "client_actions.h"
+#include "socket.h"
 
-void handle_action(SDL_KeyboardEvent* key, int sockfd, t_player_info* infos)
+void handle_action(SDL_KeyboardEvent* key, socket_holder sockfd, t_player_info* infos)
 {
   (void)infos; /* might not be necessary */
   t_client_request *req = calloc(sizeof *req, 1);
@@ -31,6 +30,6 @@ void handle_action(SDL_KeyboardEvent* key, int sockfd, t_player_info* infos)
       req = NULL;
   }
   if (req)
-    write(sockfd, (char*)req, sizeof *req);
+    write_to(sockfd, (char*)req, sizeof *req);
   free(req);
 }
