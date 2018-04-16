@@ -50,7 +50,7 @@ void  game_tick(t_game* game)
     if (map_cell_burning(game->map[i]))
       game->map[i] = 0;
 
-	/* TODO increment bomb every N ticks */
+  /* TODO increment bomb every N ticks */
   /* TODO loop on players->{bomb} */
   if (!game->bomb)
     return;

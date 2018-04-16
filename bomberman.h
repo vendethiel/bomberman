@@ -2,7 +2,6 @@
 #define BOMBERMAN_H_
 
 #include <stddef.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -23,23 +22,15 @@ typedef struct  s_client_request
 {
         int           x_pos;                  /* La position x souhait?e par le client */
         int           y_pos;                  /* La position y souhait?e par le client */
-        int           dir;                    /* La direction souhait?e par le client */
         int           command;                /* Une commande du client (0 : Ne rien faire / 1 : Poser une bombe) */
-        int           speed;                  /* La vitesse du joueur */
 }               t_client_request;
 
 typedef struct s_player_info
 {
-        char  connected;
         char  alive;
         int   x_pos;
         int   y_pos;
-        int   current_dir;
-        int   current_speed;
-        int   max_speed;
         int   bombs_left;
-        int   bombs_capacity;
-        int   frags;
 }		t_player_info;
 
 typedef char map_cell_t;

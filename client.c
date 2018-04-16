@@ -1,5 +1,4 @@
 #include <SDL.h>
-#include <unistd.h>
 #include "socket.h"
 #include "client.h"
 #include "client_actions.h"
