@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include "socket.h"
+#include "thread.h"
 #include "client.h"
 #include "client_actions.h"
 #include "map.h"
@@ -44,21 +45,20 @@ int	game_is_finish(t_game *game, int userIndex)
 void	client(char* host, int port)
 {
   t_game  *game;
+  int dc = 0, userIndex; /* did disconnect?, user index */
   socket_holder sh = connect_to_server(host, port);
   SDL_Window* pWindow = window();
   if (!pWindow)
     return;
 
-  int userIndex = 1, readSize;
-  if ((readSize = read(sh, &userIndex, sizeof userIndex)) < (long)sizeof userIndex)
-    ERR_MSG("Unable to read user index. errno=%d,size=%d\n", errno, readSize);
+  if (read_into(sh, (char*)&userIndex, sizeof userIndex))
+    ERR_MSG("Unable to read user index. errno=%d\n", errno);
   printf("Logged in as player #%d\n", userIndex + 1);
   SDL_Event event;
   while (1) {
-    int dc = 0; /* did disconnect? */
     game = (t_game*)read_from(sh, sizeof *game, &dc);
     if (!game && !dc) { /* no game fetched, but still connected? means EAGAIN, probably (since we're nonblocking) */
-      usleep(SOCKET_TIME_BETWEEN);
+      sleep_ms(SOCKET_TIME_BETWEEN);
       continue;
     }
     if (dc || game_is_finish(game, userIndex)) /* disconnected? lost? won? exit loop */

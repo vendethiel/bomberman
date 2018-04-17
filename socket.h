@@ -9,6 +9,7 @@
   #error Unsupported platform
 #endif
 
-//#include "platforms/common/socket.h"
+#include "platforms/common/socket.h"
 
 #endif
+

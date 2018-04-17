@@ -1,6 +1,6 @@
+#include <unistd.h>
 #include "../../bomberman.h"
-#include "socket.h"
-#include "../common/socket.h"
+#include "../../socket.h"
 
 void write_to(int fd, char* data, size_t size)
 {
@@ -46,7 +46,7 @@ read_request read_client_request(socket_holder* fd, socket_data* s, char* buffer
   return read_none;
 }
 
-void socket_setup(void)
+void socket_prepare(void)
 { }
 
 void socket_cleanup(void)

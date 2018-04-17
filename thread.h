@@ -13,6 +13,11 @@
 
 void mutex_lock(mutex_t*);
 void mutex_unlock(mutex_t*);
-void mutex_init(mutex_t*);
 
-#endif THREAD_H
+/* returns 1 if init correctly, 0 otherwise */
+int mutex_init(mutex_t*);
+
+void sleep_ms(int ms);
+void setup_signal_handlers(void);
+
+#endif

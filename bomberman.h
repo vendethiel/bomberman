@@ -15,8 +15,8 @@
 #define TILE_HEIGHT 16 /* y */
 #define TILE_WIDTH 16 /* x */
 
-/* to usleep() for server, to throttle for client. 100000 = 0.1s */
-#define SOCKET_TIME_BETWEEN 100000
+/* to sleep_ms() for server, to throttle for client. 100ms = 0.1s */
+#define SOCKET_TIME_BETWEEN 100
 
 typedef struct  s_client_request
 {

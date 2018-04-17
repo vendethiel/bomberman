@@ -2,7 +2,7 @@
 #include "err.h"
 #include "../../socket.h"
 
-void socket_setup(void)
+void socket_prepare(void)
 {
   static WSADATA data;
   WSAStartup(MAKEWORD(2, 0), &data);
@@ -43,4 +43,5 @@ void socket_prepare_data(socket_data* s, int port)
   if (s->sockfd == INVALID_SOCKET)
     ERR_MSG("sockfd is INVALID_SOCKET\n");
   bind(s->sockfd, (SOCKADDR*)&s->sock_serv, s->len);
+  /* TODO use the equiv to fcntl to set nonblocking */
 }

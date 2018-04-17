@@ -1,6 +1,6 @@
+#include <unistd.h>
 #include "../../bomberman.h"
-#include "socket.h"
-#include "../common/socket.h"
+#include "../../socket.h"
 
 int connect_to_server(const char* addr, int port)
 {
@@ -20,22 +20,4 @@ int connect_to_server(const char* addr, int port)
   if (fcntl(sockfd, F_SETFL, flags | O_NONBLOCK))
     ERR_MSG("Unable to set client sockfd to nonblocking. errno=%d\n", errno);
   return sockfd;
-}
-
-char*  read_from(int sockfd, size_t left, int* disconnected)
-{
-  char* buffer = malloc(left);
-  if (!buffer)
-    ERR_MSG("malloc failed for read_from");
-  char* buffLeft = buffer;
-  while (left > 0) {
-    int count = read(sockfd, buffLeft, left);
-    if (count == -1 && errno == EAGAIN)
-      continue; /* try again */
-    if (count == 0)
-      return (*disconnected = 1, NULL);
-    left -= count;
-    buffLeft += count;
-  }
-  return buffer;
 }

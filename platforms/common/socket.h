@@ -27,6 +27,7 @@ void socket_prepare_data(socket_data*, int port);
 /* client */
 socket_holder connect_to_server(const char* addr, int port);
 char*  read_from(socket_holder sh, size_t left, int* disconnected);
+int  read_into(socket_holder sockfd, char* buffer, size_t left);
 
 
 #endif

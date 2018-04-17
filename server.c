@@ -57,7 +57,7 @@ static void *game_start(void *_server)
     game_tick(&server->game);
     for (int i = 0; i < MAX_PLAYERS; ++i)
       write_to(server->socks[i], (char *) &server->game, sizeof server->game); /* TODO send less data */
-    usleep(SOCKET_TIME_BETWEEN);
+    sleep_ms(SOCKET_TIME_BETWEEN);
   }
   return NULL; /* for the thread... */
 }
@@ -67,12 +67,12 @@ int server(int port)
   t_server server;
   void *discard_return;
 
-  signal(SIGPIPE, SIG_IGN); /* discard SIGPIPE signals */
+  setup_signal_handlers();
   server.port = port;
 
   socket_prepare_data(&server.sock, port);
   server.running = 1;
-  if (mutex_init(&server.mutex) != 0)
+  if (!mutex_init(&server.mutex))
     ERR_MSG("could not init mutex, errno=%d\n", errno);
   pthread_create(&server.tid, NULL, game_start, &server);
   client("127.0.0.1", server.port);

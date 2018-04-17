@@ -1,13 +1,14 @@
+#include <stdint.h>
+#include <string.h>
+#include <limits.h>
 #include <SDL.h>
 #include "bomberman.h"
 #include "main.h"
 #include "client.h"
 #include "server.h"
-#include <stdint.h>
-#include <string.h>
 
 #if CHAR_BIT != 8
-# error Unsupported char size
+# error Unsupported char size CHAR_BIT
 #endif
 
 #define IS_BIG_ENDIAN (!*(unsigned char *)&(uint16_t){1})
