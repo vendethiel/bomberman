@@ -13,12 +13,10 @@ void socket_cleanup(void)
   WSACleanup();
 }
 
-void write_to(int fd, char* data, size_t size)
+void write_to(socket_holder fd, char* data, size_t size)
 {
-  /*
-  if (fd != -1)
+  if (fd != INVALID_SOCKET)
     write(fd, data, size);
-   */
 }
 
 read_request read_client_request(socket_holder* fd, socket_data* s, char* buffer)
