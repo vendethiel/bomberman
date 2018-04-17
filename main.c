@@ -16,10 +16,8 @@
 int	main(int argc, char** argv)
 {
   int ret = EXIT_SUCCESS;
-  if (sizeof(int) != 4 || IS_BIG_ENDIAN) {
-    puts("Cannot run with such an environment.");
-    return 1;
-  }
+  if (sizeof(int) != 4 || IS_BIG_ENDIAN)
+    ERR_MSG("Cannot run on this platform.");
 
   socket_prepare();
   if (argc == 4 && !strcmp(argv[1], "client"))
