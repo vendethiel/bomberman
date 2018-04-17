@@ -52,6 +52,8 @@ void thread_create(thread_t* t, thread_fn fn, void* data)
       0 /* initflag */,
       NULL /* thread id */
       );
+  if (0 == *t)
+    ERR_MSG("Unable to _beginthreadex");
 }
 
 void thread_join(thread_t tid)
