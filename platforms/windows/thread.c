@@ -15,9 +15,48 @@ void mutex_init(mutex_t* m)
   InitializeCriticalSection(m);
 }
 
+void mutex_cleanup(mutex_t* m)
+{
+  DeleteCriticalSection(m);
+}
+
 void sleep_ms(int ms)
 {
   Sleep((DWORD)ms);
+}
+
+struct windows_thread_wrapper
+{
+  thread_fn fn;
+  void* data;
+};
+
+/* wraps the thread function to return 0 */
+static unsigned wrap_thread_create(void* tw)
+{
+  struct windows_thread_wrapper* w = tw;
+  w->fn(w->data);
+  return 0;
+}
+
+void thread_create(thread_t* t, thread_fn fn, void* data)
+{
+  struct windows_thread_wrapper tw;
+  tw.fn = fn;
+  tw.data = data;
+  *t = _beginthreadex(
+      NULL /* security */,
+      0 /* stack size */,
+      wrap_thread_create,
+      data,
+      0 /* initflag */,
+      NULL /* thread id */
+      );
+}
+
+void thread_join(thread_t tid)
+{
+  WaitForSingleObject(tid);
 }
 
 /*

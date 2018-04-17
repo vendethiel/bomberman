@@ -16,6 +16,11 @@ void mutex_unlock(mutex_t*);
 
 /* returns 1 if init correctly, 0 otherwise */
 int mutex_init(mutex_t*);
+void mutex_cleanup(mutex_t*);
+
+typedef void(*thread_fn)(void* data);
+void thread_create(thread_t*, thread_fn, void* data);
+void thread_join(thread_t);
 
 void sleep_ms(int ms);
 void setup_signal_handlers(void);

@@ -42,7 +42,7 @@ static int handle_client(t_server *server, int userIndex)
   }
 }
 
-static void *game_start(void *_server)
+static void game_start(void *_server)
 {
   t_server *server = _server;
 
@@ -53,13 +53,12 @@ static void *game_start(void *_server)
     select_clients(&server->sock, MAX_PLAYERS, server->socks);
     /* read actions for each player */
     for (int i = 0; i < MAX_PLAYERS; ++i)
-      handle_client(server, i); /* note: DCs don't stop the server anymore. Let's see if everything still works... */
+      handle_client(server, i);
     game_tick(&server->game);
     for (int i = 0; i < MAX_PLAYERS; ++i)
-      write_to(server->socks[i], (char *) &server->game, sizeof server->game); /* TODO send less data */
+      write_to(server->socks[i], (char *) &server->game, sizeof server->game);
     sleep_ms(SOCKET_TIME_BETWEEN);
   }
-  return NULL; /* for the thread... */
 }
 
 int server(int port)
@@ -74,7 +73,7 @@ int server(int port)
   server.running = 1;
   if (!mutex_init(&server.mutex))
     ERR_MSG("could not init mutex, errno=%d\n", errno);
-  pthread_create(&server.tid, NULL, game_start, &server);
+  thread_create(&server.tid, game_start, &server);
   client("127.0.0.1", server.port);
 
   while (is_running(&server)) {
@@ -83,7 +82,7 @@ int server(int port)
   }
 
   set_running(&server, 0);
-  pthread_join(server.tid, &discard_return);
-  pthread_mutex_destroy(&server.mutex);
+  thread_join(server.tid);
+  mutex_cleanup(&server.mutex);
   return 0;
 }

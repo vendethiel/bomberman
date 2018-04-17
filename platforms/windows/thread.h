@@ -6,6 +6,4 @@
 typedef HANDLE thread_t;
 typedef CRITICAL_SECTION mutex_t;
 
-/*_beginthreadex*/
-
-#endif //PLATFORMS_WINDOWS_THREAD_H
+#endif
