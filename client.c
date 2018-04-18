@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include "bomberman.h"
 #include "socket.h"
 #include "thread.h"
 #include "client.h"

@@ -1,7 +1,6 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#include <SDL.h>
 #include "main.h"
 #include "bomberman.h"
 #include "server_state.h"

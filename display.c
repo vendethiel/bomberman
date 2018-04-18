@@ -1,4 +1,4 @@
-#include <SDL_image.h>
+#include "bomberman.h"
 #include "display.h"
 #include "map.h"
 #include "err.h"

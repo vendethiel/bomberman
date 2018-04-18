@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <limits.h>
-#include <SDL.h>
 #include "bomberman.h"
 #include "main.h"
 #include "client.h"
@@ -25,7 +24,7 @@ int	main(int argc, char** argv)
   else if (argc == 3 && !strcmp(argv[1], "server"))
     ret = server(atoi(argv[2]));
   else
-    printf("Usage:\n  %1$s server [port]\n  %1$s client [host] [port]\n", argv[0]);
+    printf("Usage:\n  %s server [port]\n  %s client [host] [port]\n", argv[0], argv[0]);
   socket_cleanup();
   return ret;
 }

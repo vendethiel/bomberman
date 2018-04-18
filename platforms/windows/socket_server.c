@@ -1,11 +1,12 @@
 #include <stdio.h>
-#include "err.h"
+#include "../../err.h"
 #include "../../socket.h"
 
 void socket_prepare(void)
 {
   static WSADATA data;
-  WSAStartup(MAKEWORD(2, 0), &data);
+  if (0 != WSAStartup(MAKEWORD(2, 2), &data))
+    ERR_MSG("WSAStartup failed!\n");
 }
 
 void socket_cleanup(void)
@@ -16,7 +17,7 @@ void socket_cleanup(void)
 void write_to(socket_holder fd, char* data, size_t size)
 {
   if (fd != INVALID_SOCKET)
-    write(fd, data, size);
+    send(fd, data, size, 0);
 }
 
 read_request read_client_request(socket_holder* fd, socket_data* s, char* buffer)

@@ -13,7 +13,7 @@ typedef struct s_socket_data {
   SOCKET sockfd;
   struct sockaddr	*sock_ptr;
   int len;
-//  fd_set readfs;
+  fd_set readfs;
 } socket_data;
 
 #endif

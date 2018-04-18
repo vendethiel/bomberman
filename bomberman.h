@@ -6,6 +6,15 @@
 #include <stdio.h>
 #include <errno.h>
 
+#ifdef _WIN32
+#define SDL_MAIN_HANDLED
+#include <SDL2\SDL.h>
+#include <SDL2\SDL_image.h>
+#else
+#include <SDL.h>
+#include <SDL_image.h>
+#endif
+
 #include "err.h"
 
 #define MAX_PLAYERS 2

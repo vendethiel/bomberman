@@ -37,6 +37,7 @@ static int handle_client(t_server *server, int userIndex)
       return 1; /* say everything was alright */
 
     case read_disconnect:
+    default: /* should not be necessary, but since you can cast anything to an enum... */
       server->game.players[userIndex].alive = 0;
       return 0;
   }
@@ -64,7 +65,6 @@ static void game_start(void *_server)
 int server(int port)
 {
   t_server server;
-  void *discard_return;
 
   setup_signal_handlers();
   server.port = port;

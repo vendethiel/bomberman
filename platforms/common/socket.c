@@ -1,4 +1,4 @@
-#include "bomberman.h"
+#include "../../bomberman.h"
 #include "../../socket.h"
 
 void select_clients(socket_data* s, int numfds, socket_holder* fds)
@@ -28,7 +28,7 @@ int  read_into(socket_holder sockfd, char* buffer, size_t left)
   char* buffLeft = buffer;
   while (left > 0) {
     /* read should have be here by virtue of platforms/_/socket.h being included */
-    int count = read(sockfd, buffLeft, left);
+    int count = recv(sockfd, buffLeft, left, 0);
     if (count == -1 && errno == EAGAIN)
       continue; /* try again */
     if (count == 0)

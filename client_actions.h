@@ -2,8 +2,8 @@
 #define HANDLE_ACTIONS_H_
 
 #include "bomberman.h"
-#include <SDL.h>
+#include "socket.h"
 
-void handle_action(SDL_KeyboardEvent* key, int sockfd, t_player_info* infos);
+void handle_action(SDL_KeyboardEvent* key, socket_holder sockfd, t_player_info* infos);
 
 #endif
