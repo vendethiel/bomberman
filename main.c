@@ -14,6 +14,10 @@
 
 int	main(int argc, char** argv)
 {
+  SDL_SetMainReady();
+  if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+    ERR_MSG("SDL init error: %s", SDL_GetError());
+
   int ret = EXIT_SUCCESS;
   if (sizeof(int) != 4 || IS_BIG_ENDIAN)
     ERR_MSG("Cannot run on this platform.");

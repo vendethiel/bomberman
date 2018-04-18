@@ -16,19 +16,18 @@ static int handle_event(SDL_Event* event, socket_holder sh, t_player_info* infos
   return 1;
 }
 
-static SDL_Window	*window(void)
+SDL_Window	*window(void)
 {
-  if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    ERR_MSG("SDL init error: %s", SDL_GetError());
-
-  SDL_Window* pWindow = NULL;
-  pWindow = SDL_CreateWindow("Bomberman", SDL_WINDOWPOS_UNDEFINED,
+  static SDL_Window *w;
+  if (!w)
+    w = SDL_CreateWindow(
+      "Bomberman",
+      SDL_WINDOWPOS_UNDEFINED,
       SDL_WINDOWPOS_UNDEFINED,
       MAP_ROW * TILE_WIDTH,
       MAP_COL * TILE_HEIGHT,
       SDL_WINDOW_SHOWN);
-
-  return pWindow;
+  return w;
 }
 
 int	game_is_finish(t_game *game, int userIndex)
@@ -45,7 +44,7 @@ int	game_is_finish(t_game *game, int userIndex)
 void	client(char* host, int port)
 {
   t_game  *game;
-  int dc = 0, userIndex; /* did disconnect?, user index */
+  int dc = 0, userIndex = 0; /* did disconnect?, user index */
   socket_holder sh = connect_to_server(host, port);
   SDL_Window* pWindow = window();
   if (!pWindow)

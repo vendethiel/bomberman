@@ -6,6 +6,7 @@
 #include <winsock2.h>
 #pragma comment(lib, "ws2_32.lib")
 
+
 typedef SOCKET socket_holder;
 
 typedef struct s_socket_data {

@@ -6,6 +6,7 @@
 #include "game.h"
 #include "socket.h"
 #include "thread.h"
+#include "client.h"
 
 static void bind_clients(t_server *server)
 {
@@ -62,6 +63,7 @@ static void game_start(void *_server)
   }
 }
 
+SDL_Window	*window(void);
 int server(int port)
 {
   t_server server;
@@ -69,6 +71,7 @@ int server(int port)
   setup_signal_handlers();
   server.port = port;
 
+  window(); /* init window here..? */
   socket_prepare_data(&server.sock, port);
   server.running = 1;
   if (!mutex_init(&server.mutex))

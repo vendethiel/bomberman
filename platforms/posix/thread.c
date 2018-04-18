@@ -33,15 +33,19 @@ static void* wrap_thread_create(void* tw)
 {
   struct posix_thread_wrapper* w = tw;
   w->fn(w->data);
+  free(tw);
   return NULL;
 }
 
 void thread_create(thread_t* tid, thread_fn fn, void* data)
 {
-  struct posix_thread_wrapper tw;
-  tw.fn = fn;
-  tw.data = data;
-  pthread_create(tid, NULL, wrap_thread_create, &tw);
+  struct posix_thread_wrapper* tw;
+  tw = malloc(sizeof *tw);
+  if (!tw)
+    ERR_MSG("Unable to malloc posix_thread_wrapper");
+  tw->fn = fn;
+  tw->data = data;
+  pthread_create(tid, NULL, wrap_thread_create, tw);
 }
 
 void thread_join(thread_t tid)

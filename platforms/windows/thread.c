@@ -39,22 +39,26 @@ static unsigned __stdcall wrap_thread_create(void* tw)
 {
   struct windows_thread_wrapper* w = tw;
   w->fn(w->data);
+  free(tw);
   return 0;
 }
 
 void thread_create(thread_t* t, thread_fn fn, void* data)
 {
-  struct windows_thread_wrapper tw;
-  tw.fn = fn;
-  tw.data = data;
+  struct windows_thread_wrapper *tw;
+  tw = malloc(sizeof *tw);
+  if (!tw)
+    ERR_MSG("Unable to alloc thread wrapper");
+  tw->fn = fn;
+  tw->data = data;
   *t = (HANDLE)_beginthreadex(
-      NULL /* security */,
-      0 /* stack size */,
-      wrap_thread_create,
-      data,
-      0 /* initflag */,
-      NULL /* thread id */
-      );
+    NULL /* security */,
+    0 /* stack size */,
+    wrap_thread_create,
+    tw,
+    0 /* initflag */,
+    NULL /* thread id */
+  );
   if (0 == *t)
     ERR_MSG("Unable to _beginthreadex");
 }

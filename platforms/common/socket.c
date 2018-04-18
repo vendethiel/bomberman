@@ -27,9 +27,14 @@ int  read_into(socket_holder sockfd, char* buffer, size_t left)
 {
   char* buffLeft = buffer;
   while (left > 0) {
-    /* read should have be here by virtue of platforms/_/socket.h being included */
     int count = recv(sockfd, buffLeft, left, 0);
-    if (count == -1 && errno == EAGAIN)
+    if (count == -1 &&
+#ifdef _WIN32
+      WSAGetLastError() == WSAEWOULDBLOCK
+#else
+      errno == EAGAIN
+#endif
+      )
       continue; /* try again */
     if (count == 0)
       return 1;
