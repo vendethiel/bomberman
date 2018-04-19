@@ -12,6 +12,22 @@
 
 #define IS_BIG_ENDIAN (!*(unsigned char *)&(uint16_t){1})
 
+static char* dumbread(void)
+{
+  char* line = malloc(100), *b = line;
+  if (!line)
+    ERR_MSG("Unable to read terminal");
+
+  int i, c;
+  for (i = 0; i < 99 && (c = fgetc(stdin)); ++i) {
+    if (c == EOF || c == '\n')
+      break;
+    line[i] = c;
+  }
+  line[i] = 0;
+  return b;
+}
+
 int	main(int argc, char** argv)
 {
   SDL_SetMainReady();
@@ -23,12 +39,24 @@ int	main(int argc, char** argv)
     ERR_MSG("Cannot run on this platform.");
 
   socket_prepare();
-  if (argc == 4 && !strcmp(argv[1], "client"))
-    client(argv[2], atoi(argv[3]));
-  else if (argc == 4 && !strcmp(argv[1], "server"))
-    ret = server(atoi(argv[2]), atoi(argv[3]));
-  else
-    printf("Usage:\n  %s server [port] [num players]\n  %s client [host] [port]\n", argv[0], argv[0]);
+  printf("Select mode: client, server: "); fflush(stdin);
+  char* mode = dumbread();
+  if (!strcmp(mode, "client")) {
+    printf("IP to connect to: "); fflush(stdin);
+    char* ip = dumbread();
+    printf("Port to connect to: "); fflush(stdin);
+    int port = atoi(dumbread());
+    client(ip, port);
+  } else if (!strcmp(mode, "server")) {
+    printf("Port to connect to: "); fflush(stdin);
+    int port = atoi(dumbread());
+    printf("Number of players (2 to 4): "); fflush(stdin);
+    int nump = atoi(dumbread());
+    ret = server(port, nump);
+  } else {
+    puts("Invalid mode entered. Modes: server, client\n");
+    ret = 1;
+  }
   socket_cleanup();
   return ret;
 }
