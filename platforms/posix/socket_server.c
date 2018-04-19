@@ -16,36 +16,6 @@ void accept_client(socket_holder* fd, socket_data* s)
   } while (-1 == *fd);
 }
 
-read_request read_client_request(socket_holder* fd, socket_data* s, char* buffer)
-{
-  (void)s;
-  if (*fd == -1)
-    return read_already_dc;
-
-	if (FD_ISSET(*fd, &s->readfs))
-	{
-		size_t left = sizeof(t_client_request);
-		char *buffLeft = buffer;
-		while (left > 0)
-		{
-			int count = read(*fd, buffer, left);
-			if (count < 0)
-				continue;
-			else if (count == 0)
-			{
-				*fd = 0;
-				FD_CLR(*fd, &s->readfs);
-				return read_disconnect;
-			}
-			left -= count;
-			buffLeft += count;
-		}
-		FD_CLR(*fd, &s->readfs);
-    return read_ok;
-  }
-  return read_none;
-}
-
 void socket_prepare(void)
 { }
 

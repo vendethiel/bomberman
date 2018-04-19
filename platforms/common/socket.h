@@ -20,7 +20,7 @@ void socket_cleanup(void);
 
 /* server */
 void accept_client(socket_holder*, socket_data*);
-read_request read_client_request(socket_holder*, socket_data*, char*);
+read_request read_client_request(socket_holder*, socket_data*, t_client_request*);
 void select_clients(socket_data*, int numclients, socket_holder*);
 void socket_prepare_data(socket_data*, int port, int numPlayers);
 

@@ -62,3 +62,29 @@ int  read_into(socket_holder sockfd, char* buffer, size_t left)
   }
   return 0;
 }
+
+read_request read_client_request(socket_holder* fd, socket_data* s, t_client_request* req)
+{
+  (void)s;
+  int dc = 0; /* disconnected? */
+#ifdef _WIN32
+  if (*fd == INVALID_SOCKET)
+    return read_already_dc;
+#else
+  if (*fd == -1)
+    return read_already_dc;
+#endif
+
+  if (FD_ISSET(*fd, &s->readfs))
+  {
+    req->x_pos = read_int(*fd, &dc);
+    req->y_pos = read_int(*fd, &dc);
+    req->command = read_int(*fd, &dc);
+    FD_CLR(*fd, &s->readfs);
+    if (dc)
+      return read_disconnect;
+    else
+      return read_ok;
+  }
+  return read_none;
+}

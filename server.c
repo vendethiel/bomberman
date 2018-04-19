@@ -30,11 +30,11 @@ static int handle_client(t_server *server, int userIndex)
 {
   if (!server->game.players[userIndex].alive)
     return 1;
-  char buffer[sizeof(t_client_request)];
+  t_client_request req;
 
-  switch (read_client_request(&server->socks[userIndex], &server->sock, buffer)) {
+  switch (read_client_request(&server->socks[userIndex], &server->sock, &req)) {
     case read_ok:
-      game_process(server, (t_client_request *) buffer, userIndex);
+      game_process(server, &req, userIndex);
       return 1;
 
     case read_already_dc:
