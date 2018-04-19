@@ -1,5 +1,7 @@
+#include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include "../../err.h"
 #include "../../thread.h"
 
 void mutex_lock(mutex_t* m)
