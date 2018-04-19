@@ -11,16 +11,35 @@ void select_clients(socket_data* s, int numfds, socket_holder* fds)
     if (-1 != fds[i])
       FD_SET(fds[i], &s->readfs);
   tv.tv_sec = tv.tv_usec = 0;
-  select(fds[MAX_PLAYERS - 1] + 1, &s->readfs, NULL, NULL, &tv); /* TODO don't use MAX_PLAYERS here */
+  select(fds[numfds - 1] + 1, &s->readfs, NULL, NULL, &tv);
 }
 
-char*  read_from(socket_holder sockfd, size_t left, int* disconnected)
+int  read_int(socket_holder sh, int* disconnected)
 {
-  char* buffer = malloc(left);
-  if (!buffer)
-    ERR_MSG("malloc failed for read_from");
-  *disconnected = read_into(sockfd, buffer, left);
-  return buffer;
+  if (*disconnected)
+    return 0; /* are we already disconnected? give up... */
+  int i;
+  *disconnected = read_into(sh, (char*)&i, sizeof i);
+  return i;
+}
+
+char  read_char(socket_holder sh, int* disconnected)
+{
+  if (*disconnected)
+    return 0; /* are we already disconnected? give up... */
+  char c;
+  *disconnected = read_into(sh, &c, sizeof c);
+  return c;
+}
+
+void send_int(socket_holder sh, int i)
+{
+  write(sh, (char*)&i, sizeof i);
+}
+
+void send_char(socket_holder sh, char c)
+{
+  write(sh, &c, sizeof c);
 }
 
 int  read_into(socket_holder sockfd, char* buffer, size_t left)
@@ -36,7 +55,7 @@ int  read_into(socket_holder sockfd, char* buffer, size_t left)
 #endif
       )
       continue; /* try again */
-    if (count == 0)
+    if (count < 1)
       return 1;
     left -= count;
     buffLeft += count;

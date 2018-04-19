@@ -17,7 +17,6 @@
 
 #include "err.h"
 
-#define MAX_PLAYERS 2
 #define MAP_COL 9 /* y | */
 #define MAP_ROW 9 /* x --- */
 #define MAP_SIZE (MAP_COL * MAP_ROW)
@@ -34,14 +33,6 @@ typedef struct  s_client_request
         int           command;                /* Une commande du client (0 : Ne rien faire / 1 : Poser une bombe) */
 }               t_client_request;
 
-typedef struct s_player_info
-{
-        char  alive;
-        int   x_pos;
-        int   y_pos;
-        int   bombs_left;
-}		t_player_info;
-
 typedef char map_cell_t;
 typedef map_cell_t t_map[MAP_SIZE];
 
@@ -53,11 +44,20 @@ typedef struct s_bomb
 	int x;
 } t_bomb;
 
+typedef struct s_player_info
+{
+        char  alive;
+        int   x_pos;
+        int   y_pos;
+}		t_player_info;
+
+
 typedef struct          s_game
 {
-        t_player_info        players[MAX_PLAYERS];
+        t_player_info*        players;
         t_map                map;
 				t_bomb* bomb;
+        int num_players;
 }                       t_game;
 
 

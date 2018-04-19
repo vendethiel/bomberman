@@ -7,14 +7,14 @@
 #include "socket.h"
 #include "thread.h"
 
-int server(int host);
+int server(int host, int numPlayers);
 
 typedef struct s_server
 {
   thread_t tid;
   mutex_t mutex;
   t_game game;
-  socket_holder socks[MAX_PLAYERS];
+  socket_holder* socks;
   socket_data sock;
   int port;
   int running;

@@ -14,7 +14,7 @@ static void sdl_rect_init(SDL_Rect *rect, int x, int y, int w, int h)
 static t_tile get_tile(t_game *game, int x, int y)
 {
   t_tile ret = {16, 208}; /* grass tile */
-  for (int i = 0; i < MAX_PLAYERS; ++i) {
+  for (int i = 0; i < game->num_players; ++i) {
     t_player_info *player = game->players + i;
     if (player->alive && player->x_pos == x && player->y_pos == y)
       return (ret.x = 0, ret.y = 224, ret);
@@ -42,7 +42,7 @@ static SDL_Surface *getSpriteMap(void)
   return spriteMap;
 }
 
-void display(SDL_Surface *screen, t_game *game/*, t_player_info *player*/)
+void display(SDL_Surface *screen, t_game *game)
 {
   SDL_Rect tile_rec;
   SDL_Rect sprite_rec;

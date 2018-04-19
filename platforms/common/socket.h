@@ -22,11 +22,16 @@ void socket_cleanup(void);
 void accept_client(socket_holder*, socket_data*);
 read_request read_client_request(socket_holder*, socket_data*, char*);
 void select_clients(socket_data*, int numclients, socket_holder*);
-void socket_prepare_data(socket_data*, int port);
+void socket_prepare_data(socket_data*, int port, int numPlayers);
+
+void write_to(socket_holder fd, char* data, size_t size);
+void send_int(socket_holder sh, int i);
+void send_char(socket_holder sh, char c);
 
 /* client */
 socket_holder connect_to_server(const char* addr, int port);
-char*  read_from(socket_holder sh, size_t left, int* disconnected);
+int  read_int(socket_holder sh, int* disconnected);
+char  read_char(socket_holder sh, int* disconnected);
 int  read_into(socket_holder sockfd, char* buffer, size_t left);
 
 

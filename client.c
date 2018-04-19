@@ -36,45 +36,58 @@ int	game_is_finish(t_game *game, int userIndex)
   /* server will fake being userIndex=-1 as userIndex, when the host died, to keep the server running */
   if (userIndex != -1 && !game->players[userIndex].alive)
     return 1; /* we're dead, game is over for us */
-  for (int i = 0; i < MAX_PLAYERS; i++)
+  for (int i = 0; i < game->num_players; i++)
     totalAlive += game->players[i].alive;
   return totalAlive < 2; /* if we have 0 or 1 player alive */
 }
 
+static void read_game(socket_holder sh, t_game* game, int* dc)
+{
+  *dc = 0;
+  for (int i = 0; i < game->num_players; ++i) {
+    game->players[i].alive = read_int(sh, dc);
+    game->players[i].x_pos = read_int(sh, dc);
+    game->players[i].y_pos = read_int(sh, dc);
+  }
+  for (int i = 0; i < MAP_SIZE; ++i) {
+    game->map[i] = read_char(sh, dc);
+  }
+}
+
 void	client(char* host, int port)
 {
-  t_game  *game;
-  int dc = 0, userIndex = 0; /* did disconnect?, user index */
+  t_game  game;
+  int dc = 0, userIndex = 0; /* did disconnect?, user index, num players */
   socket_holder sh = connect_to_server(host, port);
   SDL_Window* pWindow = window();
   if (!pWindow)
     return;
 
-  if (read_into(sh, (char*)&userIndex, sizeof userIndex))
-    ERR_MSG("Unable to read user index. errno=%d\n", errno);
-  printf("Logged in as player #%d\n", userIndex + 1);
+  userIndex = read_int(sh, &dc);
+  game.num_players = read_int(sh, &dc);
+  if (dc)
+    ERR_MSG("Unable to read user index/numPlayers. errno=%d\n", errno);
+  game.players = malloc(game.num_players * sizeof(t_player_info));
+  printf("Logged in as player #%d/%d\n", userIndex + 1, game.num_players);
   SDL_Event event;
   while (1) {
-    game = (t_game*)read_from(sh, sizeof *game, &dc);
-    if (!game && !dc) { /* no game fetched, but still connected? means EAGAIN, probably (since we're nonblocking) */
-      sleep_ms(SOCKET_TIME_BETWEEN);
-      continue;
-    }
-    if (dc || game_is_finish(game, userIndex)) /* disconnected? lost? won? exit loop */
+    read_game(sh, &game, &dc);
+    if (dc || game_is_finish(&game, userIndex)) /* disconnected? lost? won? exit loop */
       break;
     while (SDL_PollEvent(&event))
-      if (!handle_event(&event, sh, game->players + userIndex))
+      if (!handle_event(&event, sh, game.players + userIndex))
         return; /* user quit */
-    display(SDL_GetWindowSurface(pWindow), game);
-    free(game);
+    display(SDL_GetWindowSurface(pWindow), &game);
     if (SDL_UpdateWindowSurface(pWindow) < 0)
       ERR_MSG("Unable to update window surface\n");
+    sleep_ms(SOCKET_TIME_BETWEEN);
   }
-  if (!game)
+  if (dc)
     printf("Disconnected\n");
-  else if (game->players[userIndex].alive)
+  else if (game.players[userIndex].alive)
     printf("You win\nGG WP\n");
   else
     printf("You are dead you lose\n");
-  free(game);
+  free(game.players);
+  SDL_DestroyWindow(pWindow);
 }

@@ -52,7 +52,7 @@ void socket_prepare(void)
 void socket_cleanup(void)
 { }
 
-void socket_prepare_data(socket_data* s, int port)
+void socket_prepare_data(socket_data* s, int port, int numPlayers)
 {
 	int reuseopt = 1;
 	s->len = sizeof(struct sockaddr);
@@ -66,5 +66,5 @@ void socket_prepare_data(socket_data* s, int port)
 	s->sock_serv.sin_addr.s_addr = INADDR_ANY;
 	if (-1 == bind(s->sockfd, s->sock_ptr, s->len))
 		ERR_MSG("could not bind, errno=%d\n", errno);
-	listen(s->sockfd, MAX_PLAYERS);
+	listen(s->sockfd, numPlayers);
 }

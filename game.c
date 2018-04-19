@@ -9,7 +9,7 @@ static void move_player(t_game* game, int userIndex, int y, int x)
   map_cell_t cell = map_get(game->map, y, x);
   if (map_is_wall(cell) || map_has_bomb(cell) /* there's a bonus to allow walking on bombs */)
     return;
-  for (int i = 0; i < MAX_PLAYERS; ++i)
+  for (int i = 0; i < game->num_players; ++i)
     if (i != userIndex && game->players[i].x_pos == x && game->players[i].y_pos == y)
       return;
   player->y_pos = y;
@@ -28,8 +28,7 @@ void  game_process(t_server* server, t_client_request* req, int userIndex)
     int newY = player->y_pos + req->y_pos;
     move_player(&server->game, userIndex, newY, player->x_pos);
   }
-  else if (req->command && player->bombs_left && !server->game.bomb) {
-    // TODO .bomb should be on player, not on game... TG taco
+  else if (req->command && !server->game.bomb) {
     t_bomb* bomb = malloc(sizeof *bomb);
     if (!bomb)
       return;
@@ -38,7 +37,6 @@ void  game_process(t_server* server, t_client_request* req, int userIndex)
     bomb->x = player->x_pos;
     map_set(server->game.map, bomb->y, bomb->x, map_flag_bomb);
     server->game.bomb = bomb;
-    player->bombs_left--;
     printf("Bomb has been planted\n");
   }
 }
@@ -64,7 +62,7 @@ void  game_tick(t_game* game)
       int checkX = game->bomb->x + x;
       map_cell_t cell = map_get(game->map, checkY, checkX);
       /* kill players */
-      for (int i = 0; i < MAX_PLAYERS; ++i)
+      for (int i = 0; i < game->num_players; ++i)
         if (game->players[i].x_pos == checkX && game->players[i].y_pos == checkY)
           game->players[i].alive = 0;
       if (cell == 0 || map_is_breakable_wall(cell))
@@ -78,13 +76,10 @@ void  game_tick(t_game* game)
 void  game_init_players(t_game* game)
 {
   game->bomb = NULL;
-  for (int i = 0; i < MAX_PLAYERS; ++i)
-  {
+  for (int i = 0; i < game->num_players; ++i)
     game->players[i].alive = 1;
-    game->players[i].bombs_left = 5;
-  }
     
-  switch (MAX_PLAYERS) {
+  switch (game->num_players) {
     case 4:
       game->players[3].x_pos = MAP_ROW - 2;
       game->players[3].y_pos = MAP_COL - 2;

@@ -25,10 +25,10 @@ int	main(int argc, char** argv)
   socket_prepare();
   if (argc == 4 && !strcmp(argv[1], "client"))
     client(argv[2], atoi(argv[3]));
-  else if (argc == 3 && !strcmp(argv[1], "server"))
-    ret = server(atoi(argv[2]));
+  else if (argc == 4 && !strcmp(argv[1], "server"))
+    ret = server(atoi(argv[2]), atoi(argv[3]));
   else
-    printf("Usage:\n  %s server [port]\n  %s client [host] [port]\n", argv[0], argv[0]);
+    printf("Usage:\n  %s server [port] [num players]\n  %s client [host] [port]\n", argv[0], argv[0]);
   socket_cleanup();
   return ret;
 }
