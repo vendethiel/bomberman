@@ -1,6 +1,8 @@
 #ifndef PLATFORMS_COMMON_SOCKET_H_
 #define PLATFORMS_COMMON_SOCKET_H_
 
+#include "../../bomberman.h"
+
 #ifndef PLATFORMS_SPECIFIC_SOCKET_H_
   #error Invalid platforms/common/socket.h usage: need to include specific file first.
 #endif

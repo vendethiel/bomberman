@@ -12,7 +12,7 @@ SOCKET connect_to_server(const char* addr, int port)
   printf("Connecting to %s:%i\n", addr, port);
   sh = socket(AF_INET, SOCK_STREAM, 0);
   if (INVALID_SOCKET == sh)
-    ERR_MSG("Could not open socket, sockfd=%d\n", sh);
+    ERR_MSG("Could not open socket, er==\n", WSAGetLastError());
   ZeroMemory(&serv, sizeof serv);
   serv.sin_family = AF_INET;
   serv.sin_port = htons(port);
