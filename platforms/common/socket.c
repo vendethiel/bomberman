@@ -67,13 +67,8 @@ read_request read_client_request(socket_holder* fd, socket_data* s, t_client_req
 {
   (void)s;
   int dc = 0; /* disconnected? */
-#ifdef _WIN32
-  if (*fd == INVALID_SOCKET)
-    return read_already_dc;
-#else
   if (*fd == -1)
     return read_already_dc;
-#endif
 
   if (FD_ISSET(*fd, &s->readfs))
   {
